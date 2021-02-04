@@ -11,22 +11,19 @@ import { gqlConfig } from './config/gql.config'
 import { redisConfig } from './config/redis.config'
 import { sessionConfig } from './config/session.config'
 import { UserModule } from './users/users.module'
+import { AuthModule } from './auth/auth.module'
 
 @Module({
     imports: [
         ConfigModule.forRoot({
-            load: [dbConfig, gqlConfig, redisConfig, sessionConfig],
+            cache: true,
+            load: [dbConfig, redisConfig, sessionConfig, gqlConfig],
         }),
         TypeOrmModule.forRootAsync({
             imports: [ConfigModule],
             inject: [ConfigService],
             useFactory: async (cs: ConfigService) =>
                 cs.get<TypeOrmModuleOptions>('db')!,
-        }),
-        GraphQLModule.forRootAsync({
-            imports: [ConfigModule],
-            inject: [ConfigService],
-            useFactory: (cs: ConfigService) => cs.get<GqlModuleOptions>('gql')!,
         }),
         RedisModule.forRootAsync({
             imports: [ConfigModule],
@@ -53,6 +50,12 @@ import { UserModule } from './users/users.module'
                 }
             },
         }),
+        GraphQLModule.forRootAsync({
+            imports: [ConfigModule],
+            inject: [ConfigService],
+            useFactory: (cs: ConfigService) => cs.get<GqlModuleOptions>('gql')!,
+        }),
+        AuthModule,
         UserModule,
     ],
 })
