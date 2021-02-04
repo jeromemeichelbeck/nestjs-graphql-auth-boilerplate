@@ -23,9 +23,15 @@ export class AuthService {
         const { email, password } = loginInfo
 
         const user = await this.usersService.findOne(email)
-        if (user && user.password === password) {
-            return user
+
+        if (user) {
+            const isValidPassword = await this.bycryptProvider.verify(
+                password,
+                user.password,
+            )
+            if (isValidPassword) return user
         }
+
         return null
     }
 }
