@@ -1,35 +1,28 @@
 import { Module } from '@nestjs/common'
-import { GraphQLModule } from '@nestjs/graphql'
-import { TypeOrmModule } from '@nestjs/typeorm'
-import { join } from 'path'
-import { AppController } from './app.controller'
-import { AppService } from './app.service'
+import { ConfigModule, ConfigService } from '@nestjs/config'
+import { GqlModuleOptions, GraphQLModule } from '@nestjs/graphql'
+import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm'
+import { dbConfig } from './config/db.config'
+import { gqlConfig } from './config/gql.config'
 import { UserModule } from './users/users.module'
 
 @Module({
     imports: [
+        ConfigModule.forRoot({
+            load: [dbConfig, gqlConfig],
+        }),
         TypeOrmModule.forRootAsync({
-            useFactory: () => ({
-                type: 'postgres',
-                host: 'localhost',
-                port: 5432,
-                username: 'jerome',
-                password: 'password',
-                database: 'metaleast',
-                entities: [__dirname + '/**/*.entity{.ts,.js}'],
-                synchronize: true,
-                logging: true,
-            }),
+            imports: [ConfigModule],
+            inject: [ConfigService],
+            useFactory: (cs: ConfigService) =>
+                cs.get<TypeOrmModuleOptions>('db'),
         }),
         GraphQLModule.forRootAsync({
-            useFactory: () => ({
-                autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-                sortSchema: true,
-            }),
+            imports: [ConfigModule],
+            inject: [ConfigService],
+            useFactory: (cs: ConfigService) => cs.get<GqlModuleOptions>('gql'),
         }),
         UserModule,
     ],
-    controllers: [AppController],
-    providers: [AppService],
 })
 export class AppModule {}

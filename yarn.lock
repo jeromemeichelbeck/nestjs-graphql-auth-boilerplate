@@ -4312,6 +4312,13 @@ functional-red-black-tree@^1.0.1:
   resolved "https://registry.yarnpkg.com/functional-red-black-tree/-/functional-red-black-tree-1.0.1.tgz#1b0ab3bd553b2a0d6399d29c0e3ea0b252078327"
   integrity sha1-GwqzvVU7Kg1jmdKcDj6gslIHgyc=
 
+gen-env-types@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/gen-env-types/-/gen-env-types-1.0.5.tgz#620ff9fec10a4de9ffb6b6bd214a116069a5ce63"
+  integrity sha512-lntr8/DHuuCA83e8LT37kfGnAxydI/57ToyoBsGQfeGeSsZFt3OgNOxyRJf1Za7CUb5fQIBOwBS8bu3lBLL4AA==
+  dependencies:
+    chalk "^4.0.0"
+
 gensync@^1.0.0-beta.1:
   version "1.0.0-beta.2"
   resolved "https://registry.yarnpkg.com/gensync/-/gensync-1.0.0-beta.2.tgz#32a6ee76c3d7f52d46b2b1ae5d93fea8580a25e0"
