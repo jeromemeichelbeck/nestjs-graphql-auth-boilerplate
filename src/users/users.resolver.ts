@@ -1,6 +1,4 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
-import { RegisterInfoInput } from '../auth/input-types/register-info.input'
-import { CreateUserInput } from './input-types/create-user.input'
+import { Query, Resolver } from '@nestjs/graphql'
 import { User } from './user.entity'
 import { UsersService } from './users.service'
 
