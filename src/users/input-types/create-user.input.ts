@@ -2,9 +2,9 @@ import { InputType } from '@nestjs/graphql'
 
 @InputType()
 export class CreateUserInput {
-    email: string
+    email!: string
 
-    password: string
+    password!: string
 
-    username: string
+    username!: string
 }

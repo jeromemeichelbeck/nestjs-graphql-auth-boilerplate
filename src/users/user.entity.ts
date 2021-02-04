@@ -6,15 +6,15 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
 export class User {
     @PrimaryGeneratedColumn()
     @Field(() => Int)
-    id: number
+    id!: number
 
     @Column({ unique: true })
-    email: string
+    email!: string
 
     @Column()
     @HideField()
-    password: string
+    password!: string
 
     @Column()
-    username: string
+    username!: string
 }
