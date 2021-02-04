@@ -1,6 +1,6 @@
 import { UseGuards } from '@nestjs/common'
 import { Query, Resolver } from '@nestjs/graphql'
-import { AuthGuard } from '../guards/auth.guard'
+import { AuthGuard } from '../../guards/auth.guard'
 import { User } from './user.entity'
 import { UsersService } from './users.service'
 
