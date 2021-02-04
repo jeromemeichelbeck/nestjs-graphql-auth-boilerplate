@@ -1,8 +1,9 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm'
 import { join } from 'path'
+import { ConfigEnum } from '../types/config.enum'
 
-export const dbConfig = (): { db: TypeOrmModuleOptions } => ({
-    db: {
+export const dbConfig = (): { [ConfigEnum.db]: TypeOrmModuleOptions } => ({
+    [ConfigEnum.db]: {
         type: 'postgres',
         host: process.env.DB_HOST,
         port: +process.env.DB_PORT,

@@ -11,6 +11,7 @@ import { dbConfig } from './config/db.config'
 import { gqlConfig } from './config/gql.config'
 import { redisConfig } from './config/redis.config'
 import { sessionConfig } from './config/session.config'
+import { ConfigEnum } from './types/config.enum'
 import { UserModule } from './users/users.module'
 
 @Module({
@@ -23,13 +24,13 @@ import { UserModule } from './users/users.module'
             imports: [ConfigModule],
             inject: [ConfigService],
             useFactory: async (cs: ConfigService) =>
-                cs.get<TypeOrmModuleOptions>('db')!,
+                cs.get<TypeOrmModuleOptions>(ConfigEnum.db)!,
         }),
         RedisModule.forRootAsync({
             imports: [ConfigModule],
             inject: [ConfigService],
             useFactory: (cs: ConfigService) =>
-                cs.get<RedisModuleOptions>('redis')!,
+                cs.get<RedisModuleOptions>(ConfigEnum.redis)!,
         }),
         SessionModule.forRootAsync({
             imports: [ConfigModule, RedisModule],
@@ -38,13 +39,14 @@ import { UserModule } from './users/users.module'
                 const client = redis.getClient()
                 const RedisStore = connectRedis(session)
                 const store = new RedisStore({
-                    ...cs.get<RedisStoreOptions>('redisStore'),
+                    ...cs.get<RedisStoreOptions>(ConfigEnum.redisStore),
                     client,
                 })
 
                 return {
                     session: {
-                        ...cs.get<NestSessionOptions>('sess')?.session!,
+                        ...cs.get<NestSessionOptions>(ConfigEnum.sess)
+                            ?.session!,
                         store,
                     },
                 }
@@ -53,7 +55,8 @@ import { UserModule } from './users/users.module'
         GraphQLModule.forRootAsync({
             imports: [ConfigModule],
             inject: [ConfigService],
-            useFactory: (cs: ConfigService) => cs.get<GqlModuleOptions>('gql')!,
+            useFactory: (cs: ConfigService) =>
+                cs.get<GqlModuleOptions>(ConfigEnum.gql)!,
         }),
         AuthModule,
     ],

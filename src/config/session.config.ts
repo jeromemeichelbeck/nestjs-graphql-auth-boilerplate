@@ -1,15 +1,16 @@
 import { RedisStoreOptions } from 'connect-redis'
 import { NestSessionOptions } from 'nestjs-session'
+import { ConfigEnum } from '../types/config.enum'
 
 export const sessionConfig = (): {
-    redisStore: RedisStoreOptions
-    sess: NestSessionOptions
+    [ConfigEnum.redisStore]: RedisStoreOptions
+    [ConfigEnum.sess]: NestSessionOptions
 } => {
     return {
-        redisStore: {
+        [ConfigEnum.redisStore]: {
             disableTouch: true,
         },
-        sess: {
+        [ConfigEnum.sess]: {
             session: {
                 name: process.env.SESS_NAME,
                 cookie: {
