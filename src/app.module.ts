@@ -6,12 +6,12 @@ import connectRedis, { RedisStoreOptions } from 'connect-redis'
 import session from 'express-session'
 import { RedisModule, RedisModuleOptions, RedisService } from 'nestjs-redis'
 import { NestSessionOptions, SessionModule } from 'nestjs-session'
+import { AuthModule } from './auth/auth.module'
 import { dbConfig } from './config/db.config'
 import { gqlConfig } from './config/gql.config'
 import { redisConfig } from './config/redis.config'
 import { sessionConfig } from './config/session.config'
 import { UserModule } from './users/users.module'
-import { AuthModule } from './auth/auth.module'
 
 @Module({
     imports: [
@@ -56,7 +56,6 @@ import { AuthModule } from './auth/auth.module'
             useFactory: (cs: ConfigService) => cs.get<GqlModuleOptions>('gql')!,
         }),
         AuthModule,
-        UserModule,
     ],
 })
 export class AppModule {}

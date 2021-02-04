@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { CreateUserInput } from './input-types/create-user.input'
+import { RegisterInfoInput } from '../auth/input-types/register-info.input'
 import { User } from './user.entity'
 import { UsersRepository } from './users.repository'
 
@@ -15,9 +15,8 @@ export class UsersService {
         return this.userRepository.findOne({ email })
     }
 
-    async create(createUserInput: CreateUserInput): Promise<User> {
-        const user = this.userRepository.create(createUserInput)
-
+    async register(registerInfo: RegisterInfoInput): Promise<User> {
+        const user = this.userRepository.create(registerInfo)
         await this.userRepository.save(user)
 
         return user
