@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { ErrorCodeEnum } from '../../types/error-codes'
-import { MyGraphQLError } from '../common/classes/my-grapghql-error.class'
+import { CaughtGraphQLError } from '../common/classes/caught-grapghql-error.class'
 import { DUPLICATE_KEY_REGEX } from '../common/constants'
 import { StringFormatProvider } from './string-format.provider'
 
@@ -10,15 +10,18 @@ export class ErrorHandlerProvider<T> {
 
     async dbErrorHandler(fn: () => Promise<T>): Promise<T> {
         const defaultError = {
-            code: ErrorCodeEnum.UNKNOWN,
-            message: 'An unknown error has occured',
+            code: ErrorCodeEnum.DB_ERROR,
+            message: 'An unknown databade error has occured',
             fields: [],
         }
 
         try {
             return await fn()
         } catch (error) {
-            if (!error.code) throw new MyGraphQLError(defaultError)
+            if (!error.code) {
+                console.log(error)
+                throw new CaughtGraphQLError([defaultError])
+            }
 
             switch (error.code) {
                 case '23505':
@@ -29,13 +32,16 @@ export class ErrorHandlerProvider<T> {
                         key,
                     )} '${value}' is already registered`
 
-                    throw new MyGraphQLError({
-                        code: ErrorCodeEnum.DUPLICATE_KEY,
-                        message,
-                        fields: [key],
-                    })
+                    throw new CaughtGraphQLError([
+                        {
+                            code: ErrorCodeEnum.DUPLICATE_KEY,
+                            message,
+                            fields: [key],
+                        },
+                    ])
                 default:
-                    throw new MyGraphQLError(defaultError)
+                    console.log(error)
+                    throw new CaughtGraphQLError([defaultError])
             }
         }
     }

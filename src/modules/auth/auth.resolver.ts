@@ -1,5 +1,6 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { MySession, Session } from '../../decorators/session.decorator'
+import { GraphQLValidationPipe } from '../../pipes/graphql-validation.pipe'
 import { User } from '../users/user.entity'
 import { AuthService } from './auth.service'
 import { LoginInfoInput } from './input-types/login-info.input'
@@ -12,7 +13,8 @@ export class AuthResolver {
     @Mutation(() => User)
     async register(
         @Session() session: MySession,
-        @Args('registerInfo') registerInfo: RegisterInfoInput,
+        @Args('registerInfo', GraphQLValidationPipe)
+        registerInfo: RegisterInfoInput,
     ): Promise<User> {
         const user = await this.authService.register(registerInfo)
         session.userId = user.id
