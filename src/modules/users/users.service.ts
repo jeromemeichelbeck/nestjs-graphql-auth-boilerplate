@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { RolesEnum } from '../../types/roles'
+import { FieldError } from '../common/object-types/field-error.model'
+import { RoleEnum } from '../../types/roles'
 import { RegisterInfoInput } from '../auth/input-types/register-info.input'
 import { User } from './user.entity'
 import { UsersRepository } from './users.repository'
+import { ErrorCodeEnum } from '../../types/error-codes'
 
 @Injectable()
 export class UsersService {
@@ -20,9 +22,24 @@ export class UsersService {
         return this.userRepository.findOne(id)
     }
 
-    async register(registerInfo: RegisterInfoInput): Promise<User> {
+    async register(
+        registerInfo: RegisterInfoInput,
+    ): Promise<User | FieldError<User>> {
         const user = this.userRepository.create(registerInfo)
-        await this.userRepository.save(user)
+
+        try {
+            await this.userRepository.save(user)
+        } catch (error) {
+            switch (error.code) {
+                case '23505':
+                    console.log(error.detail)
+                    return {
+                        code: ErrorCodeEnum.DUPLICATE_KEY,
+                        message: 'This email address in already registered',
+                        fields: ['email'],
+                    }
+            }
+        }
 
         return user
     }

@@ -1,6 +1,6 @@
 import { Field, HideField, Int, ObjectType } from '@nestjs/graphql'
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
-import { RolesEnum } from '../../types/roles'
+import { RoleEnum } from '../../types/roles'
 
 @Entity()
 @ObjectType()
@@ -12,11 +12,11 @@ export class User {
     @Column({
         type: 'enum',
         array: true,
-        enum: RolesEnum,
-        default: [RolesEnum.admin],
+        enum: RoleEnum,
+        default: [RoleEnum.admin],
     })
     @HideField()
-    roles!: RolesEnum[]
+    roles!: RoleEnum[]
 
     @Column({ unique: true })
     email!: string
@@ -28,7 +28,7 @@ export class User {
     @Column()
     username!: string
 
-    hasRole(roles: RolesEnum[]): boolean {
+    hasRole(roles: RoleEnum[]): boolean {
         console.log(this.roles)
         console.log(roles)
         return this.roles.some((role) => roles.indexOf(role) > -1)

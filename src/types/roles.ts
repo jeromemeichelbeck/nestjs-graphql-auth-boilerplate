@@ -1,6 +1,6 @@
 export const ROLES = 'ROLES'
 
-export enum RolesEnum {
+export enum RoleEnum {
     admin = 'admin',
     reader = 'reader',
 }

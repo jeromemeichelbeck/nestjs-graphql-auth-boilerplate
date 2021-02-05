@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common'
+import { FieldError } from '../common/object-types/field-error.model'
 import { User } from '../users/user.entity'
 import { UsersService } from '../users/users.service'
 import { BcryptProvider } from '../utils/bcrypt.provider'
@@ -12,7 +13,9 @@ export class AuthService {
         private readonly bycryptProvider: BcryptProvider,
     ) {}
 
-    async register(registerInfo: RegisterInfoInput): Promise<User> {
+    async register(
+        registerInfo: RegisterInfoInput,
+    ): Promise<User | FieldError<User>> {
         const { password } = registerInfo
         registerInfo.password = await this.bycryptProvider.hash(password)
 

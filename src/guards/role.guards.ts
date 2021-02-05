@@ -3,7 +3,7 @@ import { Reflector } from '@nestjs/core'
 import { GqlExecutionContext } from '@nestjs/graphql'
 import { MySession } from '../decorators/session.decorator'
 import { UsersService } from '../modules/users/users.service'
-import { ROLES, RolesEnum } from '../types/roles'
+import { ROLES, RoleEnum } from '../types/roles'
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -13,7 +13,7 @@ export class RolesGuard implements CanActivate {
     ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
-        const roles = this.reflector.get<RolesEnum[]>(
+        const roles = this.reflector.get<RoleEnum[]>(
             ROLES,
             context.getHandler(),
         )
