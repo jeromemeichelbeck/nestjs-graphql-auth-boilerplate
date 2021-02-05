@@ -30,6 +30,8 @@ export class UsersService {
         return this.errorHandler.dbErrorHandler(
             async () => await this.userRepository.save(user),
         )
+
+        // return await this.userRepository.save(user)
     }
 
     async getUsers(): Promise<User[]> {

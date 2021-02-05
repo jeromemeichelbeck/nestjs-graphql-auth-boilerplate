@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { ErrorCodeEnum } from '../../types/error-codes'
+import { MyGraphQLError } from '../common/classes/my-grapghql-error.class'
 import { DUPLICATE_KEY_REGEX } from '../common/constants'
 import { FieldError } from '../common/object-types/field-error.model'
 import { StringFormatProvider } from './string-format.provider'
@@ -25,13 +26,15 @@ export class ErrorHandlerProvider<T> {
                     const [_, key, value] = error.detail.match(
                         DUPLICATE_KEY_REGEX,
                     )
-                    return {
+                    const message = `${this.stringFormat.capitalize(
+                        key,
+                    )} '${value}' is already registered`
+
+                    throw new MyGraphQLError({
                         code: ErrorCodeEnum.DUPLICATE_KEY,
-                        message: `${this.stringFormat.capitalize(
-                            key,
-                        )} '${value}' is already registered`,
+                        message,
                         fields: [key],
-                    }
+                    })
                 default:
                     return defaultError
             }
