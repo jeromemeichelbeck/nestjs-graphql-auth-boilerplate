@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { RegisterInfoInput } from '../auth/input-types/register-info.input'
-import { FieldError } from '../common/object-types/field-error.model'
 import { ErrorHandlerProvider } from '../utils/error-handler.provider'
 import { User } from './user.entity'
 import { UsersRepository } from './users.repository'
@@ -22,16 +21,12 @@ export class UsersService {
         return this.userRepository.findOne(id)
     }
 
-    async register(
-        registerInfo: RegisterInfoInput,
-    ): Promise<User | FieldError<User>> {
+    async register(registerInfo: RegisterInfoInput): Promise<User> {
         const user = this.userRepository.create(registerInfo)
 
         return this.errorHandler.dbErrorHandler(
             async () => await this.userRepository.save(user),
         )
-
-        // return await this.userRepository.save(user)
     }
 
     async getUsers(): Promise<User[]> {

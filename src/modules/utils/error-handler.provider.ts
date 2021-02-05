@@ -2,14 +2,13 @@ import { Injectable } from '@nestjs/common'
 import { ErrorCodeEnum } from '../../types/error-codes'
 import { MyGraphQLError } from '../common/classes/my-grapghql-error.class'
 import { DUPLICATE_KEY_REGEX } from '../common/constants'
-import { FieldError } from '../common/object-types/field-error.model'
 import { StringFormatProvider } from './string-format.provider'
 
 @Injectable()
 export class ErrorHandlerProvider<T> {
     constructor(private readonly stringFormat: StringFormatProvider) {}
 
-    async dbErrorHandler(fn: () => Promise<T>): Promise<T | FieldError<T>> {
+    async dbErrorHandler(fn: () => Promise<T>): Promise<T> {
         const defaultError = {
             code: ErrorCodeEnum.UNKNOWN,
             message: 'An unknown error has occured',
@@ -19,7 +18,7 @@ export class ErrorHandlerProvider<T> {
         try {
             return await fn()
         } catch (error) {
-            if (!error.code) return defaultError
+            if (!error.code) throw new MyGraphQLError(defaultError)
 
             switch (error.code) {
                 case '23505':
@@ -36,7 +35,7 @@ export class ErrorHandlerProvider<T> {
                         fields: [key],
                     })
                 default:
-                    return defaultError
+                    throw new MyGraphQLError(defaultError)
             }
         }
     }

@@ -1,7 +1,5 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { MySession, Session } from '../../decorators/session.decorator'
-import { FieldError as FieldError } from '../common/object-types/field-error.model'
-import { UserResponse } from '../users/object-types/user-response.model'
 import { User } from '../users/user.entity'
 import { AuthService } from './auth.service'
 import { LoginInfoInput } from './input-types/login-info.input'
@@ -11,19 +9,15 @@ import { RegisterInfoInput } from './input-types/register-info.input'
 export class AuthResolver {
     constructor(private readonly authService: AuthService) {}
 
-    @Mutation(() => UserResponse)
+    @Mutation(() => User)
     async register(
         @Session() session: MySession,
         @Args('registerInfo') registerInfo: RegisterInfoInput,
-    ): Promise<UserResponse> {
-        const response = await this.authService.register(registerInfo)
+    ): Promise<User> {
+        const user = await this.authService.register(registerInfo)
+        session.userId = user.id
 
-        if (response instanceof User) {
-            session.userId = response.id
-            return { user: response }
-        }
-
-        return { errors: [response] }
+        return user
     }
 
     @Mutation(() => User, { nullable: true })
