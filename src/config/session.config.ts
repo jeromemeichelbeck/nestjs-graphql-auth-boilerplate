@@ -1,6 +1,6 @@
 import { RedisStoreOptions } from 'connect-redis'
 import { NestSessionOptions } from 'nestjs-session'
-import { ConfigEnum } from '../types/config.enum'
+import { ConfigEnum } from '../types/config'
 
 export const sessionConfig = (): {
     [ConfigEnum.redisStore]: RedisStoreOptions

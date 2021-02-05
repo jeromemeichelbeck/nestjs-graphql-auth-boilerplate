@@ -1,6 +1,6 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm'
 import { join } from 'path'
-import { ConfigEnum } from '../types/config.enum'
+import { ConfigEnum } from '../types/config'
 
 export const dbConfig = (): { [ConfigEnum.db]: TypeOrmModuleOptions } => ({
     [ConfigEnum.db]: {
@@ -13,5 +13,6 @@ export const dbConfig = (): { [ConfigEnum.db]: TypeOrmModuleOptions } => ({
         entities: [join(__dirname, '../**/*.entity{.ts,.js}')],
         synchronize: process.env.NODE_ENV === 'development',
         logging: process.env.NODE_ENV === 'development',
+        // dropSchema: process.env.NODE_ENV === 'development',
     },
 })

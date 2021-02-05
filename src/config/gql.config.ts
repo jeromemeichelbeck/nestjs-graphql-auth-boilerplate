@@ -1,5 +1,5 @@
 import { GqlModuleOptions } from '@nestjs/graphql'
-import { ConfigEnum } from '../types/config.enum'
+import { ConfigEnum } from '../types/config'
 
 export const gqlConfig = (): { [ConfigEnum.gql]: GqlModuleOptions } => ({
     gql: {

@@ -11,7 +11,7 @@ import { dbConfig } from '../config/db.config'
 import { gqlConfig } from '../config/gql.config'
 import { redisConfig } from '../config/redis.config'
 import { sessionConfig } from '../config/session.config'
-import { ConfigEnum } from '../types/config.enum'
+import { ConfigEnum } from '../types/config'
 import { UserModule } from './users/users.module'
 
 @Module({

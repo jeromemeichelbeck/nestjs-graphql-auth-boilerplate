@@ -1,5 +1,5 @@
 import { RedisModuleOptions } from 'nestjs-redis'
-import { ConfigEnum } from '../types/config.enum'
+import { ConfigEnum } from '../types/config'
 
 export const redisConfig = (): { [ConfigEnum.redis]: RedisModuleOptions } => {
     return {

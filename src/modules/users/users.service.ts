@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
+import { RolesEnum } from '../../types/roles'
 import { RegisterInfoInput } from '../auth/input-types/register-info.input'
 import { User } from './user.entity'
 import { UsersRepository } from './users.repository'
@@ -11,8 +12,12 @@ export class UsersService {
         private readonly userRepository: UsersRepository,
     ) {}
 
-    async findOne(email: string): Promise<User | undefined> {
+    async findOneByEmail(email: string): Promise<User | undefined> {
         return this.userRepository.findOne({ email })
+    }
+
+    async findOneById(id: number): Promise<User | undefined> {
+        return this.userRepository.findOne(id)
     }
 
     async register(registerInfo: RegisterInfoInput): Promise<User> {

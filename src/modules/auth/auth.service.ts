@@ -22,7 +22,7 @@ export class AuthService {
     async validateLogin(loginInfo: LoginInfoInput): Promise<User | null> {
         const { email, password } = loginInfo
 
-        const user = await this.usersService.findOne(email)
+        const user = await this.usersService.findOneByEmail(email)
 
         if (user) {
             const isValidPassword = await this.bycryptProvider.verify(

@@ -1,6 +1,9 @@
 import { UseGuards } from '@nestjs/common'
 import { Query, Resolver } from '@nestjs/graphql'
+import { Roles } from '../../decorators/roles.decorator'
 import { AuthGuard } from '../../guards/auth.guard'
+import { RolesGuard } from '../../guards/role.guards'
+import { RolesEnum } from '../../types/roles'
 import { User } from './user.entity'
 import { UsersService } from './users.service'
 
@@ -9,7 +12,8 @@ export class UsersResolver {
     constructor(private readonly usersService: UsersService) {}
 
     @Query(() => [User])
-    @UseGuards(AuthGuard)
+    @Roles(RolesEnum.admin)
+    @UseGuards(AuthGuard, RolesGuard)
     async users(): Promise<User[]> {
         return this.usersService.getUsers()
     }
