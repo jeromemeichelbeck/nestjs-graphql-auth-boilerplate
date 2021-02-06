@@ -32,6 +32,7 @@ export class UsersService {
                 user.email === 'emilie@jolly.io')
         ) {
             user.roles = [RoleEnum.admin, RoleEnum.reader]
+            user.active = true
         }
 
         return this.errorHandler.dbErrorHandler(

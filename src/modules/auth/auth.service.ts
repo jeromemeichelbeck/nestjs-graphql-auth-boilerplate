@@ -4,16 +4,16 @@ import { CaughtGraphQLError } from '../common/classes/caught-grapghql-error.clas
 import { User } from '../users/user.entity'
 import { UsersService } from '../users/users.service'
 import { BcryptProvider } from '../utils/bcrypt.provider'
+import { MailerProvider } from '../utils/mailer.provider'
 import { LoginInfoInput } from './input-types/login-info.input'
 import { RegisterInfoInput } from './input-types/register-info.input'
-import { MailerService } from '@nestjs-modules/mailer'
 
 @Injectable()
 export class AuthService {
     constructor(
         private readonly usersService: UsersService,
         private readonly bycryptProvider: BcryptProvider,
-        private readonly mailerService: MailerService,
+        private readonly mailerProvider: MailerProvider,
     ) {}
 
     async register(registerInfo: RegisterInfoInput): Promise<User> {
@@ -22,12 +22,13 @@ export class AuthService {
 
         const user = await this.usersService.register(registerInfo)
 
-        await this.mailerService.sendMail({
-            to: 'jeromesnail@hotmail.fr',
+        await this.mailerProvider.sendMail({
+            to: user.email,
             subject: 'Register bla bla bla',
-            template: 'test',
+            template: 'welcome',
             context: {
-                test: 'prout',
+                username: user.username,
+                link: '#',
             },
         })
 
