@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common'
+import { ErrorCodeEnum } from '../../types/error-codes'
+import { CaughtGraphQLError } from '../common/classes/caught-grapghql-error.class'
 import { User } from '../users/user.entity'
 import { UsersService } from '../users/users.service'
 import { BcryptProvider } from '../utils/bcrypt.provider'
@@ -19,7 +21,7 @@ export class AuthService {
         return this.usersService.register(registerInfo)
     }
 
-    async validateLogin(loginInfo: LoginInfoInput): Promise<User | null> {
+    async validateLogin(loginInfo: LoginInfoInput): Promise<User> {
         const { email, password } = loginInfo
 
         const user = await this.usersService.findOneByEmail(email)
@@ -32,6 +34,12 @@ export class AuthService {
             if (isValidPassword) return user
         }
 
-        return null
+        throw new CaughtGraphQLError([
+            {
+                code: ErrorCodeEnum.UNAUTHORIZED,
+                message: 'Invalid credentials',
+                fields: ['email', 'password'],
+            },
+        ])
     }
 }
