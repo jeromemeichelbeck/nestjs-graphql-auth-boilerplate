@@ -6,19 +6,32 @@ import { UsersService } from '../users/users.service'
 import { BcryptProvider } from '../utils/bcrypt.provider'
 import { LoginInfoInput } from './input-types/login-info.input'
 import { RegisterInfoInput } from './input-types/register-info.input'
+import { MailerService } from '@nestjs-modules/mailer'
 
 @Injectable()
 export class AuthService {
     constructor(
         private readonly usersService: UsersService,
         private readonly bycryptProvider: BcryptProvider,
+        private readonly mailerService: MailerService,
     ) {}
 
     async register(registerInfo: RegisterInfoInput): Promise<User> {
         const { password } = registerInfo
         registerInfo.password = await this.bycryptProvider.hash(password)
 
-        return this.usersService.register(registerInfo)
+        const user = await this.usersService.register(registerInfo)
+
+        await this.mailerService.sendMail({
+            to: 'jeromesnail@hotmail.fr',
+            subject: 'Register bla bla bla',
+            template: 'test',
+            context: {
+                test: 'prout',
+            },
+        })
+
+        return user
     }
 
     async validateLogin(loginInfo: LoginInfoInput): Promise<User> {

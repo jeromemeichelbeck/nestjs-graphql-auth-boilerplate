@@ -1,12 +1,12 @@
-import { forwardRef, Module } from '@nestjs/common'
+import { MailerModule } from '@nestjs-modules/mailer'
+import { Module } from '@nestjs/common'
 import { UserModule } from '../users/users.module'
-import { UsersService } from '../users/users.service'
 import { UtilsModule } from '../utils/utils.module'
 import { AuthResolver } from './auth.resolver'
 import { AuthService } from './auth.service'
 
 @Module({
-    imports: [UserModule, UtilsModule],
+    imports: [UserModule, MailerModule, UtilsModule],
     providers: [AuthService, AuthResolver],
     exports: [AuthService],
 })

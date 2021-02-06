@@ -14,5 +14,8 @@ declare namespace NodeJS {
     REDIS_PREFIX: string;
     SESS_NAME: string;
     SESS_SECRET: string;
+    EMAIL_HOST: string;
+    EMAIL_USER: string;
+    EMAIL_PASSWORD: string;
   }
 }

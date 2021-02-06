@@ -1,3 +1,4 @@
+import { MailerModule, MailerOptions } from '@nestjs-modules/mailer'
 import { Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { GqlModuleOptions, GraphQLModule } from '@nestjs/graphql'
@@ -8,24 +9,37 @@ import { RedisModule, RedisModuleOptions, RedisService } from 'nestjs-redis'
 import { NestSessionOptions, SessionModule } from 'nestjs-session'
 import { dbConfig } from '../config/db.config'
 import { gqlConfig } from '../config/gql.config'
+import { mailerConfig } from '../config/mailer.config'
 import { redisConfig } from '../config/redis.config'
 import { sessionConfig } from '../config/session.config'
 import { ConfigEnum } from '../types/config'
 import { AuthModule } from './auth/auth.module'
-import { SeedModule, SeedModuleOptions } from './seed/seed.module'
+import { SeedModule } from './seed/seed.module'
 import { UserModule } from './users/users.module'
 
 @Module({
     imports: [
         ConfigModule.forRoot({
             cache: true,
-            load: [dbConfig, redisConfig, sessionConfig, gqlConfig],
+            load: [
+                dbConfig,
+                redisConfig,
+                sessionConfig,
+                mailerConfig,
+                gqlConfig,
+            ],
         }),
         TypeOrmModule.forRootAsync({
             imports: [ConfigModule],
             inject: [ConfigService],
             useFactory: async (cs: ConfigService) =>
                 cs.get<TypeOrmModuleOptions>(ConfigEnum.db)!,
+        }),
+        SeedModule.forRootAsync({
+            imports: [ConfigModule, AuthModule, UserModule],
+            useFactory: () => ({
+                production: process.env.NODE_ENV === 'production',
+            }),
         }),
         RedisModule.forRootAsync({
             imports: [ConfigModule],
@@ -53,17 +67,17 @@ import { UserModule } from './users/users.module'
                 }
             },
         }),
+        MailerModule.forRootAsync({
+            imports: [ConfigModule, RedisModule],
+            inject: [ConfigService, RedisService],
+            useFactory: (cs: ConfigService) =>
+                cs.get<MailerOptions>(ConfigEnum.mailer)!,
+        }),
         GraphQLModule.forRootAsync({
             imports: [ConfigModule],
             inject: [ConfigService],
             useFactory: (cs: ConfigService) =>
                 cs.get<GqlModuleOptions>(ConfigEnum.gql)!,
-        }),
-        SeedModule.forRootAsync({
-            imports: [ConfigModule, AuthModule, UserModule],
-            useFactory: () => ({
-                production: process.env.NODE_ENV === 'production',
-            }),
         }),
         AuthModule,
         UserModule,

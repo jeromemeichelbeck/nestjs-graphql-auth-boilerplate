@@ -9,6 +9,9 @@ export class User {
     @Field(() => Int)
     id!: number
 
+    @Column({ default: false })
+    active!: boolean
+
     @Column({
         type: 'enum',
         array: true,
@@ -29,8 +32,6 @@ export class User {
     username!: string
 
     hasRole(roles: RoleEnum[]): boolean {
-        console.log(this.roles)
-        console.log(roles)
         return this.roles.some((role) => roles.indexOf(role) > -1)
     }
 }
