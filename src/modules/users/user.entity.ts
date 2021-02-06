@@ -16,7 +16,7 @@ export class User {
         type: 'enum',
         array: true,
         enum: RoleEnum,
-        default: [RoleEnum.reader],
+        default: [RoleEnum.READER],
     })
     @HideField()
     roles!: RoleEnum[]

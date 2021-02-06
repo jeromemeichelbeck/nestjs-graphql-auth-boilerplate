@@ -12,7 +12,7 @@ export class UsersResolver {
     constructor(private readonly usersService: UsersService) {}
 
     @Query(() => [User])
-    @Roles(RoleEnum.admin)
+    @Roles(RoleEnum.ADMIN)
     @UseGuards(AuthGuard, RolesGuard)
     async users(): Promise<User[]> {
         return this.usersService.getUsers()

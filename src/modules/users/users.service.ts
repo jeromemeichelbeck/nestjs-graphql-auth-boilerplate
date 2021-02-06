@@ -31,7 +31,7 @@ export class UsersService {
             (user.email === 'jerome@meichelbeck.io' ||
                 user.email === 'emilie@jolly.io')
         ) {
-            user.roles = [RoleEnum.admin, RoleEnum.reader]
+            user.roles = [RoleEnum.ADMIN, RoleEnum.READER]
             user.active = true
         }
 
