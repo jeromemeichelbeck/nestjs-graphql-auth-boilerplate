@@ -10,6 +10,7 @@ export class User {
     id!: number
 
     @Column({ default: false })
+    @HideField()
     active!: boolean
 
     @Column({

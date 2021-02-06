@@ -15,14 +15,10 @@ export class AuthResolver {
 
     @Mutation(() => User)
     async register(
-        @Session() session: MySession,
         @Args('registerInfo', GraphQLValidationPipe)
         registerInfo: RegisterInfoInput,
     ): Promise<User> {
-        const user = await this.authService.register(registerInfo)
-        session.userId = user.id
-
-        return user
+        return await this.authService.register(registerInfo)
     }
 
     @Mutation(() => User)
@@ -61,5 +57,19 @@ export class AuthResolver {
                 resolve(true)
             })
         })
+    }
+
+    @Mutation(() => Boolean)
+    async confirmEmail(
+        @Session() session: MySession,
+        @Args('token') token: string,
+    ): Promise<boolean> {
+        const user = await this.authService.confirmEmail(token)
+
+        if (!user) return false
+
+        session.userId = user.id
+
+        return true
     }
 }

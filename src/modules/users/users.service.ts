@@ -23,6 +23,10 @@ export class UsersService {
         return this.userRepository.findOne(id)
     }
 
+    async getUsers(): Promise<User[]> {
+        return this.userRepository.find({})
+    }
+
     async register(registerInfo: RegisterInfoInput): Promise<User> {
         const user = this.userRepository.create(registerInfo)
 
@@ -40,8 +44,9 @@ export class UsersService {
         )
     }
 
-    async getUsers(): Promise<User[]> {
-        return this.userRepository.find({})
+    async activate(user: User): Promise<void> {
+        user.active = true
+        await this.userRepository.save(user)
     }
 
     // Dev

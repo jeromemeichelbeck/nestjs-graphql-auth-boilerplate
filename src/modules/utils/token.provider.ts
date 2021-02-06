@@ -7,10 +7,7 @@ import { RedisPrefixEnum } from '../../types/redis'
 export class TokenProvider {
     constructor(private readonly redisService: RedisService) {}
 
-    async generateLink(
-        prefix: RedisPrefixEnum,
-        userId: number,
-    ): Promise<string> {
+    async generateLink(prefix: RedisPrefixEnum, payload: any): Promise<string> {
         const client = this.redisService.getClient()
         const token = uuid()
         const key = `${prefix}:${token}`
@@ -27,20 +24,21 @@ export class TokenProvider {
                 break
         }
 
-        await client.set(key, userId, 'ex', time)
+        await client.set(key, JSON.stringify(payload), 'ex', time)
 
         return `http://localhost:3000/${prefix}/${token}`
     }
 
-    async validateToken(key: string, userId: number): Promise<boolean> {
+    async validateToken(prefix: RedisPrefixEnum, token: string): Promise<any> {
         const client = this.redisService.getClient()
+        const key = `${prefix}:${token}`
 
-        const id = await client.get(key)
+        const payload = await client.get(key)
 
-        if (id && +id === userId) {
+        if (payload) {
             await client.del(key)
 
-            return true
+            return JSON.parse(payload)
         }
 
         return false

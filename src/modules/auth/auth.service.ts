@@ -64,4 +64,21 @@ export class AuthService {
             },
         ])
     }
+
+    async confirmEmail(token: string): Promise<User | false> {
+        const userId = await this.tokenProvider.validateToken(
+            RedisPrefixEnum.CONFIRM_EMAIL,
+            token,
+        )
+
+        if (!userId || isNaN(+userId)) return false
+
+        const user = await this.usersService.findOneById(userId)
+
+        if (!user) return false
+
+        await this.usersService.activate(user)
+
+        return user
+    }
 }
