@@ -2,7 +2,9 @@ import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
 import { GqlExecutionContext } from '@nestjs/graphql'
 import { MySession } from '../decorators/session.decorator'
+import { CaughtGraphQLError } from '../modules/common/classes/caught-grapghql-error.class'
 import { UsersService } from '../modules/users/users.service'
+import { ErrorCodeEnum } from '../types/error-codes'
 import { ROLES, RoleEnum } from '../types/roles'
 
 @Injectable()
@@ -27,6 +29,14 @@ export class RolesGuard implements CanActivate {
         const user = await this.userService.findOneById(userId)
         if (!user) return false
 
-        return user.hasRole(roles)
+        if (user.hasRole(roles)) return true
+
+        throw new CaughtGraphQLError([
+            {
+                code: ErrorCodeEnum.FORBIDDEN,
+                message: 'Forbidden action',
+                fields: [],
+            },
+        ])
     }
 }

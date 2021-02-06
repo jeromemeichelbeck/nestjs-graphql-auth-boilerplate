@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
+import { RoleEnum } from '../../types/roles'
 import { RegisterInfoInput } from '../auth/input-types/register-info.input'
+import { DropOptions } from '../common/base.repository'
 import { ErrorHandlerProvider } from '../utils/error-handler.provider'
 import { User } from './user.entity'
 import { UsersRepository } from './users.repository'
@@ -24,6 +26,14 @@ export class UsersService {
     async register(registerInfo: RegisterInfoInput): Promise<User> {
         const user = this.userRepository.create(registerInfo)
 
+        if (
+            process.env.NODE_ENV === 'development' &&
+            (user.email === 'jerome@meichelbeck.io' ||
+                user.email === 'emilie@jolly.io')
+        ) {
+            user.roles = [RoleEnum.admin, RoleEnum.reader]
+        }
+
         return this.errorHandler.dbErrorHandler(
             async () => await this.userRepository.save(user),
         )
@@ -31,5 +41,10 @@ export class UsersService {
 
     async getUsers(): Promise<User[]> {
         return this.userRepository.find({})
+    }
+
+    // Dev
+    async drop(options?: DropOptions) {
+        await this.userRepository.drop(options)
     }
 }

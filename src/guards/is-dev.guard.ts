@@ -4,16 +4,16 @@ import { CaughtGraphQLError } from '../modules/common/classes/caught-grapghql-er
 import { ErrorCodeEnum } from '../types/error-codes'
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class IsDevGuard implements CanActivate {
     canActivate(context: ExecutionContext): boolean {
         const ctx = GqlExecutionContext.create(context)
-
-        if (!!ctx.getContext().req.session.userId) return true
+        if (ctx.getContext().req.cookies.isDev === process.env.DEV_COOKIE)
+            return true
 
         throw new CaughtGraphQLError([
             {
-                code: ErrorCodeEnum.UNAUTHORIZED,
-                message: 'Unauthorized action',
+                code: ErrorCodeEnum.FORBIDDEN,
+                message: 'Forbidden action',
                 fields: [],
             },
         ])

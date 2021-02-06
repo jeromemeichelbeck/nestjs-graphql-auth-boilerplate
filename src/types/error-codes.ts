@@ -1,6 +1,8 @@
 import { registerEnumType } from '@nestjs/graphql'
 
 export enum ErrorCodeEnum {
+    UNAUTHORIZED = 'UNAUTHORIZED',
+    FORBIDDEN = 'FORBIDDEN',
     UNKNOWN = 'UNKNOWN',
     DB_ERROR = 'DB_ERROR',
     DUPLICATE_KEY = 'DUPLICATE_KEY',
@@ -9,5 +11,3 @@ export enum ErrorCodeEnum {
     INVALID_CREDENTIALS = 'INVALID_CREDENTIALS',
     INVALID_USERNAME = 'INVALID_USERNAME',
 }
-
-registerEnumType(ErrorCodeEnum, { name: 'ErrorcodeEnum' })

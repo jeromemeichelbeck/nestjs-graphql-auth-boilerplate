@@ -12,6 +12,7 @@ import { redisConfig } from '../config/redis.config'
 import { sessionConfig } from '../config/session.config'
 import { ConfigEnum } from '../types/config'
 import { AuthModule } from './auth/auth.module'
+import { SeedModule } from './seed/seed.module'
 
 @Module({
     imports: [
@@ -58,7 +59,7 @@ import { AuthModule } from './auth/auth.module'
                 ...cs.get<GqlModuleOptions>(ConfigEnum.gql)!,
             }),
         }),
-        AuthModule,
+        SeedModule,
     ],
 })
 export class AppModule {}
