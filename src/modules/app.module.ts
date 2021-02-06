@@ -12,7 +12,8 @@ import { redisConfig } from '../config/redis.config'
 import { sessionConfig } from '../config/session.config'
 import { ConfigEnum } from '../types/config'
 import { AuthModule } from './auth/auth.module'
-import { SeedModule } from './seed/seed.module'
+import { SeedModule, SeedModuleOptions } from './seed/seed.module'
+import { UserModule } from './users/users.module'
 
 @Module({
     imports: [
@@ -55,11 +56,17 @@ import { SeedModule } from './seed/seed.module'
         GraphQLModule.forRootAsync({
             imports: [ConfigModule],
             inject: [ConfigService],
-            useFactory: (cs: ConfigService) => ({
-                ...cs.get<GqlModuleOptions>(ConfigEnum.gql)!,
+            useFactory: (cs: ConfigService) =>
+                cs.get<GqlModuleOptions>(ConfigEnum.gql)!,
+        }),
+        SeedModule.forRootAsync({
+            imports: [ConfigModule, AuthModule, UserModule],
+            useFactory: () => ({
+                production: process.env.NODE_ENV === 'production',
             }),
         }),
-        SeedModule,
+        AuthModule,
+        UserModule,
     ],
 })
 export class AppModule {}
