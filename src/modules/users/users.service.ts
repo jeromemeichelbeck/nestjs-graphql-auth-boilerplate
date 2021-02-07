@@ -4,6 +4,7 @@ import { RoleEnum } from '../../types/roles'
 import { RegisterInfoInput } from '../auth/input-types/register-info.input'
 import { DropOptions } from '../common/base.repository'
 import { ErrorHandlerProvider } from '../utils/error-handler.provider'
+import { UtilsService } from '../utils/utils.service'
 import { User } from './user.entity'
 import { UsersRepository } from './users.repository'
 
@@ -12,6 +13,7 @@ export class UsersService {
     constructor(
         @InjectRepository(UsersRepository)
         private readonly userRepository: UsersRepository,
+        private readonly utilsService: UtilsService,
         private readonly errorHandler: ErrorHandlerProvider<User>,
     ) {}
 
@@ -24,6 +26,7 @@ export class UsersService {
     }
 
     async getUsers(): Promise<User[]> {
+        await this.utilsService.sleep(1000)
         return this.userRepository.find({})
     }
 

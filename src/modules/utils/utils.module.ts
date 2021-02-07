@@ -5,10 +5,12 @@ import { ErrorHandlerProvider } from './error-handler.provider'
 import { MailerProvider } from './mailer.provider'
 import { StringFormatProvider } from './string-format.provider'
 import { TokenProvider } from './token.provider'
+import { UtilsService } from './utils.service'
 
 @Module({
     imports: [RedisModule],
     providers: [
+        UtilsService,
         ErrorHandlerProvider,
         MailerProvider,
         BcryptProvider,
@@ -16,6 +18,7 @@ import { TokenProvider } from './token.provider'
         TokenProvider,
     ],
     exports: [
+        UtilsService,
         ErrorHandlerProvider,
         MailerProvider,
         BcryptProvider,
