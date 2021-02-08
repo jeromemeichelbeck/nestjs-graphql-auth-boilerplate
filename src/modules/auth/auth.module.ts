@@ -6,7 +6,7 @@ import { AuthResolver } from './auth.resolver'
 import { AuthService } from './auth.service'
 
 @Module({
-    imports: [UserModule, MailerModule, UtilsModule],
+    imports: [UserModule, MailerModule],
     providers: [AuthService, AuthResolver],
     exports: [AuthService],
 })

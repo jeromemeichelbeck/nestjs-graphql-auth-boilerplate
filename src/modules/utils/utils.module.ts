@@ -1,4 +1,5 @@
-import { Module } from '@nestjs/common'
+import { Global, Module } from '@nestjs/common'
+import { ConfigModule } from '@nestjs/config'
 import { RedisModule } from 'nestjs-redis'
 import { BcryptProvider } from './bcrypt.provider'
 import { ErrorHandlerProvider } from './error-handler.provider'
@@ -7,8 +8,9 @@ import { StringFormatProvider } from './string-format.provider'
 import { TokenProvider } from './token.provider'
 import { UtilsService } from './utils.service'
 
+@Global()
 @Module({
-    imports: [RedisModule],
+    imports: [ConfigModule, RedisModule],
     providers: [
         UtilsService,
         ErrorHandlerProvider,

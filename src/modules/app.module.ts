@@ -6,6 +6,7 @@ import { MailerModule } from './mailer.boot'
 import { RedisModule } from './redis.boot'
 import { SeedModule } from './seed.boot'
 import { SessionModule } from './session.boot'
+import { StoreModule } from './store.boot'
 import { TypeOrmModule } from './typeorm.boot'
 import { UserModule } from './users/users.module'
 
@@ -15,6 +16,7 @@ import { UserModule } from './users/users.module'
         TypeOrmModule,
         SeedModule,
         RedisModule,
+        StoreModule,
         SessionModule,
         MailerModule,
         GraphQlModule,
