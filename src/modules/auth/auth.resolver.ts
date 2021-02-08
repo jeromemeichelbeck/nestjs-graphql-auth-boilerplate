@@ -1,7 +1,9 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { Response } from 'express'
+import { Ip } from '../../decorators/ip.decorator'
 import { Res } from '../../decorators/res.decorator'
 import { MySession, Session } from '../../decorators/session.decorator'
+import { UserAgent } from '../../decorators/user-agent.decorator'
 import { GraphQLValidationPipe } from '../../pipes/graphql-validation.pipe'
 import { ErrorCodeEnum } from '../../types/error-codes'
 import { CaughtGraphQLError } from '../common/classes/caught-grapghql-error.class'
@@ -24,11 +26,14 @@ export class AuthResolver {
     @Mutation(() => User)
     async login(
         @Session() session: MySession,
+        @UserAgent() userAgent: string,
+        @Ip() ip: string,
         @Args('loginInfo') loginInfo: LoginInfoInput,
     ): Promise<User> {
         const user = await this.authService.validateLogin(loginInfo)
 
         session.userId = user.id
+        await this.authService.storeSession(user.id, session.id, userAgent, ip)
 
         return user
     }
@@ -39,29 +44,23 @@ export class AuthResolver {
         @Res() res: Response,
         @Args('hard', { nullable: true }) hard: boolean = false,
     ): Promise<boolean> {
-        return new Promise((resolve) => {
-            session.destroy((error) => {
-                if (error) {
-                    throw new CaughtGraphQLError([
-                        {
-                            code: ErrorCodeEnum.INTERNAL_SERVER_ERROR,
-                            message: 'An error occured while logging out',
-                            fields: [],
-                        },
-                    ])
-                }
-                if (hard) {
-                    res.clearCookie(process.env.SESS_NAME)
-                }
+        const { userId } = session
 
-                resolve(true)
-            })
-        })
+        await this.authService.logout(session)
+        res.clearCookie(process.env.SESS_NAME)
+
+        if (hard) {
+            await this.authService.wipeSession(userId)
+        }
+
+        return true
     }
 
     @Mutation(() => Boolean)
     async confirmEmail(
         @Session() session: MySession,
+        @UserAgent() userAgent: string,
+        @Ip() ip: string,
         @Args('token') token: string,
     ): Promise<boolean> {
         const user = await this.authService.confirmEmail(token)
@@ -69,6 +68,7 @@ export class AuthResolver {
         if (!user) return false
 
         session.userId = user.id
+        await this.authService.storeSession(user.id, session.id, userAgent, ip)
 
         return true
     }

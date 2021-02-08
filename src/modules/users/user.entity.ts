@@ -1,6 +1,7 @@
 import { Field, HideField, Int, ObjectType } from '@nestjs/graphql'
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
 import { RoleEnum } from '../../types/roles'
+import { Session } from '../sessions/session.entity'
 
 @Entity()
 @ObjectType()
@@ -12,6 +13,10 @@ export class User {
     @Column({ default: false })
     @HideField()
     active!: boolean
+
+    @OneToMany(() => Session, (session) => session.user)
+    @HideField()
+    sessions!: Session[]
 
     @Column({
         type: 'enum',

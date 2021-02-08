@@ -4,6 +4,7 @@ import { Session as ExpressSession } from 'express-session'
 
 export interface MySession extends ExpressSession {
     userId: number
+    lastVisited: Date
 }
 
 export const Session = createParamDecorator(

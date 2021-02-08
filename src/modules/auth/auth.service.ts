@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common'
+import { MySession } from '../../decorators/session.decorator'
 import { ErrorCodeEnum } from '../../types/error-codes'
 import { RedisPrefixEnum } from '../../types/redis'
 import { CaughtGraphQLError } from '../common/classes/caught-grapghql-error.class'
+import { SessionsService } from '../sessions/sessions.service'
+import { StoreService } from '../store/store.service'
 import { User } from '../users/user.entity'
 import { UsersService } from '../users/users.service'
 import { BcryptProvider } from '../utils/bcrypt.provider'
@@ -17,6 +20,8 @@ export class AuthService {
         private readonly bycryptProvider: BcryptProvider,
         private readonly tokenProvider: TokenProvider,
         private readonly mailerProvider: MailerProvider,
+        private readonly storeService: StoreService,
+        private readonly sessionsService: SessionsService,
     ) {}
 
     async register(registerInfo: RegisterInfoInput): Promise<User> {
@@ -80,5 +85,50 @@ export class AuthService {
         await this.usersService.activate(user)
 
         return user
+    }
+
+    async storeSession(
+        userId: number,
+        sessionId: string,
+        userAgent: string,
+        ip: string,
+    ): Promise<void> {
+        await this.sessionsService.storeSession(
+            userId,
+            sessionId,
+            userAgent,
+            ip,
+        )
+    }
+
+    async wipeSession(userId: number): Promise<void> {
+        const store = this.storeService.getStore()
+
+        const userSessions = await this.sessionsService.getSessionsByUserId(
+            userId,
+        )
+        for (const { sessionId } of userSessions) {
+            store.destroy(sessionId)
+        }
+
+        await this.sessionsService.wipeSession(userId)
+    }
+
+    async logout(session: MySession): Promise<void> {
+        return new Promise((resolve) => {
+            session.destroy(async (error) => {
+                if (error) {
+                    throw new CaughtGraphQLError([
+                        {
+                            code: ErrorCodeEnum.INTERNAL_SERVER_ERROR,
+                            message: 'An error occured while logging out',
+                            fields: [],
+                        },
+                    ])
+                }
+                await this.sessionsService.clearSessionById(session.id)
+                resolve()
+            })
+        })
     }
 }

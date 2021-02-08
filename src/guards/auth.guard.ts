@@ -1,5 +1,7 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common'
 import { GqlExecutionContext } from '@nestjs/graphql'
+import { Session } from 'inspector'
+import { MySession } from '../decorators/session.decorator'
 import { CaughtGraphQLError } from '../modules/common/classes/caught-grapghql-error.class'
 import { ErrorCodeEnum } from '../types/error-codes'
 
@@ -7,8 +9,11 @@ import { ErrorCodeEnum } from '../types/error-codes'
 export class AuthGuard implements CanActivate {
     canActivate(context: ExecutionContext): boolean {
         const ctx = GqlExecutionContext.create(context)
-
-        if (!!ctx.getContext().req.session.userId) return true
+        const session: MySession = ctx.getContext().req.session
+        if (!!session.userId) {
+            session.lastVisited = new Date()
+            return true
+        }
 
         throw new CaughtGraphQLError([
             {
