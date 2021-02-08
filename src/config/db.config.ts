@@ -12,7 +12,7 @@ export const dbConfig = (): { [ConfigEnum.db]: TypeOrmModuleOptions } => ({
         database: process.env.DB_DATABASE,
         entities: [join(__dirname, '../**/*.entity{.ts,.js}')],
         synchronize: process.env.NODE_ENV === 'development',
-        logging: process.env.NODE_ENV === 'development',
+        // logging: process.env.NODE_ENV === 'development',
         // dropSchema: process.env.NODE_ENV === 'development',
     },
 })

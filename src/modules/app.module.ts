@@ -1,84 +1,23 @@
-import { MailerModule, MailerOptions } from '@nestjs-modules/mailer'
 import { Module } from '@nestjs/common'
-import { ConfigModule, ConfigService } from '@nestjs/config'
-import { GqlModuleOptions, GraphQLModule } from '@nestjs/graphql'
-import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm'
-import connectRedis, { RedisStoreOptions } from 'connect-redis'
-import session from 'express-session'
-import { RedisModule, RedisModuleOptions, RedisService } from 'nestjs-redis'
-import { NestSessionOptions, SessionModule } from 'nestjs-session'
-import { dbConfig } from '../config/db.config'
-import { gqlConfig } from '../config/gql.config'
-import { mailerConfig } from '../config/mailer.config'
-import { redisConfig } from '../config/redis.config'
-import { sessionConfig } from '../config/session.config'
-import { ConfigEnum } from '../types/config'
 import { AuthModule } from './auth/auth.module'
-import { SeedModule } from './seed/seed.module'
+import { ConfigModule } from './config.boot'
+import { GraphQlModule } from './graphql.boot'
+import { MailerModule } from './mailer.boot'
+import { RedisModule } from './redis.boot'
+import { SeedModule } from './seed.boot'
+import { SessionModule } from './session.boot'
+import { TypeOrmModule } from './typeorm.boot'
 import { UserModule } from './users/users.module'
 
 @Module({
     imports: [
-        ConfigModule.forRoot({
-            cache: true,
-            load: [
-                dbConfig,
-                redisConfig,
-                sessionConfig,
-                mailerConfig,
-                gqlConfig,
-            ],
-        }),
-        TypeOrmModule.forRootAsync({
-            imports: [ConfigModule],
-            inject: [ConfigService],
-            useFactory: async (cs: ConfigService) =>
-                cs.get<TypeOrmModuleOptions>(ConfigEnum.db)!,
-        }),
-        SeedModule.forRootAsync({
-            imports: [ConfigModule, AuthModule, UserModule],
-            useFactory: () => ({
-                production: process.env.NODE_ENV === 'production',
-            }),
-        }),
-        RedisModule.forRootAsync({
-            imports: [ConfigModule],
-            inject: [ConfigService],
-            useFactory: (cs: ConfigService) =>
-                cs.get<RedisModuleOptions>(ConfigEnum.redis)!,
-        }),
-        SessionModule.forRootAsync({
-            imports: [ConfigModule, RedisModule],
-            inject: [ConfigService, RedisService],
-            useFactory: (cs: ConfigService, redis: RedisService) => {
-                const client = redis.getClient()
-                const RedisStore = connectRedis(session)
-                const store = new RedisStore({
-                    ...cs.get<RedisStoreOptions>(ConfigEnum.redisStore),
-                    client,
-                })
-
-                return {
-                    session: {
-                        ...cs.get<NestSessionOptions>(ConfigEnum.sess)
-                            ?.session!,
-                        store,
-                    },
-                }
-            },
-        }),
-        MailerModule.forRootAsync({
-            imports: [ConfigModule, RedisModule],
-            inject: [ConfigService, RedisService],
-            useFactory: (cs: ConfigService) =>
-                cs.get<MailerOptions>(ConfigEnum.mailer)!,
-        }),
-        GraphQLModule.forRootAsync({
-            imports: [ConfigModule],
-            inject: [ConfigService],
-            useFactory: (cs: ConfigService) =>
-                cs.get<GqlModuleOptions>(ConfigEnum.gql)!,
-        }),
+        ConfigModule,
+        TypeOrmModule,
+        SeedModule,
+        RedisModule,
+        SessionModule,
+        MailerModule,
+        GraphQlModule,
         AuthModule,
         UserModule,
     ],

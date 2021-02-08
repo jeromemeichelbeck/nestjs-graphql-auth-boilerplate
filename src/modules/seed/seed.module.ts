@@ -1,6 +1,6 @@
 import { DynamicModule, Module, Provider, Type } from '@nestjs/common'
+import { ConfigModule } from '@nestjs/config'
 import { AuthModule } from '../auth/auth.module'
-import { AuthService } from '../auth/auth.service'
 import { UserModule } from '../users/users.module'
 import { SeedResolver } from './seed.resolver'
 import { SeedService } from './seed.service'
@@ -16,7 +16,7 @@ export interface SeedModuleAsyncOptions {
 }
 
 @Module({})
-export class SeedModule {
+export class SeedCoreModule {
     public static forRootAsync({
         imports,
         useFactory,
@@ -27,7 +27,7 @@ export class SeedModule {
         if (!production) providers.push(SeedResolver)
 
         return {
-            module: SeedModule,
+            module: SeedCoreModule,
             imports,
             providers,
         }
