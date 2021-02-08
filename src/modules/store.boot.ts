@@ -1,6 +1,7 @@
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { RedisModule, RedisService } from 'nestjs-redis'
-import { StoreCoreModule } from './store/store.module'
+import { ConfigEnum } from '../types/config'
+import { StoreCoreModule, StoreModuleOptions } from './store/store.module'
 
 export const StoreModule = StoreCoreModule.forRootAsync({
     imports: [ConfigModule, RedisModule],
@@ -8,6 +9,7 @@ export const StoreModule = StoreCoreModule.forRootAsync({
     useFactory: (configService: ConfigService, redisService: RedisService) => {
         return {
             client: redisService.getClient(),
+            ...configService.get<StoreModuleOptions>(ConfigEnum.redisStore),
         }
     },
 })

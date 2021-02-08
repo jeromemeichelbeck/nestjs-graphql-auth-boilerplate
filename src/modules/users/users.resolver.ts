@@ -11,23 +11,11 @@ import { UsersService } from './users.service'
 
 @Resolver(() => User)
 export class UsersResolver {
-    constructor(
-        private readonly usersService: UsersService,
-        private readonly storeService: StoreService,
-    ) {}
-
+    constructor(private readonly usersService: UsersService) {}
     @Query(() => [User])
     @Roles(RoleEnum.ADMIN)
     @UseGuards(AuthGuard, RolesGuard)
-    async users(@Session() session: MySession): Promise<User[]> {
-        const store = this.storeService.getStore()
-        store.get(session.id, (err, sess) => {
-            if (err) {
-                console.log(err)
-            } else {
-                console.log(sess)
-            }
-        })
+    async users(): Promise<User[]> {
         return this.usersService.getUsers()
     }
 }

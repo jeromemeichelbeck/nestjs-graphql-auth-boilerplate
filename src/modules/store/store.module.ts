@@ -1,12 +1,10 @@
 import { DynamicModule, Global, Module, Provider, Type } from '@nestjs/common'
-import { Redis } from 'ioredis'
 import expressSession from 'express-session'
-import connectRedis from 'connect-redis'
+import connectRedis, { RedisStoreOptions } from 'connect-redis'
 import { StoreService } from './store.service'
+import { REDIS_STORE, STORE_MODULE_OPTIONS } from './store.constants'
 
-export interface StoreModuleOptions {
-    client: Redis
-}
+export interface StoreModuleOptions extends RedisStoreOptions {}
 
 interface StoreModuleAsyncOptions {
     imports: Array<Type<any> | string | any>
@@ -14,11 +12,7 @@ interface StoreModuleAsyncOptions {
     useFactory: (...args: any[]) => StoreModuleOptions
 }
 
-@Module({
-    providers: [StoreService],
-    exports: [StoreService],
-})
-@Global()
+@Module({})
 export class StoreCoreModule {
     public static forRootAsync({
         imports,
@@ -27,26 +21,28 @@ export class StoreCoreModule {
     }: StoreModuleAsyncOptions): DynamicModule {
         const providers: Provider[] = [
             {
-                provide: 'STORE_MODULE_OPTIONS',
+                provide: STORE_MODULE_OPTIONS,
                 inject,
                 useFactory,
             },
             {
-                provide: 'REDIS_STORE',
-                inject: ['STORE_MODULE_OPTIONS'],
-                useFactory: ({ client }: StoreModuleOptions) => {
+                provide: REDIS_STORE,
+                inject: [STORE_MODULE_OPTIONS],
+                useFactory: (storeOptions: StoreModuleOptions) => {
                     const RedisStore = connectRedis(expressSession)
-                    const store = new RedisStore({ client })
+                    const store = new RedisStore(storeOptions)
 
                     return store
                 },
             },
+            StoreService,
         ]
 
         return {
             module: StoreCoreModule,
             imports,
             providers,
+            exports: providers,
         }
     }
 }

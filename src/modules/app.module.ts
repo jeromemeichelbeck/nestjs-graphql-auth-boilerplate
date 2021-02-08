@@ -14,7 +14,6 @@ import { UserModule } from './users/users.module'
     imports: [
         ConfigModule,
         TypeOrmModule,
-        SeedModule,
         RedisModule,
         StoreModule,
         SessionModule,
@@ -22,6 +21,7 @@ import { UserModule } from './users/users.module'
         GraphQlModule,
         AuthModule,
         UserModule,
+        SeedModule,
     ],
 })
 export class AppModule {}
