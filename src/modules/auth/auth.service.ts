@@ -55,6 +55,16 @@ export class AuthService {
         const user = await this.usersService.findOneByEmail(email)
 
         if (user) {
+            if (!user.active) {
+                throw new CaughtGraphQLError([
+                    {
+                        code: ErrorCodeEnum.INACTIVE,
+                        message: 'Inactive account',
+                        fields: [],
+                    },
+                ])
+            }
+
             const isValidPassword = await this.bycryptProvider.verify(
                 password,
                 user.password,
