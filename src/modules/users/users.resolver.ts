@@ -12,6 +12,7 @@ import { UsersService } from './users.service'
 export class UsersResolver {
     constructor(private readonly usersService: UsersService) {}
     @Query(() => User)
+    @UseGuards(AuthGuard)
     async myProfile(@Sess('userId') userId: number): Promise<User> {
         return await this.usersService.findOneById(userId)
     }
