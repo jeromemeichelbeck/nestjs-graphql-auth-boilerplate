@@ -2,11 +2,9 @@ import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { Response } from 'express'
 import { Ip } from '../../decorators/ip.decorator'
 import { Res } from '../../decorators/res.decorator'
-import { MySession, Session } from '../../decorators/session.decorator'
+import { MySession, Sess } from '../../decorators/sess.decorator'
 import { UserAgent } from '../../decorators/user-agent.decorator'
 import { GraphQLValidationPipe } from '../../pipes/graphql-validation.pipe'
-import { ErrorCodeEnum } from '../../types/error-codes'
-import { CaughtGraphQLError } from '../common/classes/caught-grapghql-error.class'
 import { User } from '../users/user.entity'
 import { AuthService } from './auth.service'
 import { LoginInfoInput } from './input-types/login-info.input'
@@ -25,7 +23,7 @@ export class AuthResolver {
 
     @Mutation(() => User)
     async login(
-        @Session() session: MySession,
+        @Sess() session: MySession,
         @UserAgent() userAgent: string,
         @Ip() ip: string,
         @Args('loginInfo') loginInfo: LoginInfoInput,
@@ -33,14 +31,14 @@ export class AuthResolver {
         const user = await this.authService.validateLogin(loginInfo)
 
         session.userId = user.id
-        await this.authService.storeSession(user.id, session.id, userAgent, ip)
+        await this.authService.storeSession(user, session, userAgent, ip)
 
         return user
     }
 
     @Mutation(() => Boolean)
     async logout(
-        @Session() session: MySession,
+        @Sess() session: MySession,
         @Res() res: Response,
         @Args('hard', { nullable: true }) hard: boolean = false,
     ): Promise<boolean> {
@@ -58,7 +56,7 @@ export class AuthResolver {
 
     @Mutation(() => Boolean)
     async confirmEmail(
-        @Session() session: MySession,
+        @Sess() session: MySession,
         @UserAgent() userAgent: string,
         @Ip() ip: string,
         @Args('token') token: string,
@@ -67,8 +65,7 @@ export class AuthResolver {
 
         if (!user) return false
 
-        session.userId = user.id
-        await this.authService.storeSession(user.id, session.id, userAgent, ip)
+        await this.authService.storeSession(user, session, userAgent, ip)
 
         return true
     }

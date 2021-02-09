@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common'
-import { MySession } from '../../decorators/session.decorator'
+import { MySession } from '../../decorators/sess.decorator'
 import { ErrorCodeEnum } from '../../types/error-codes'
 import { RedisPrefixEnum } from '../../types/redis'
+import { RoleEnum } from '../../types/roles'
 import { CaughtGraphQLError } from '../common/classes/caught-grapghql-error.class'
 import { SessionsService } from '../sessions/sessions.service'
 import { StoreService } from '../store/store.service'
@@ -88,14 +89,16 @@ export class AuthService {
     }
 
     async storeSession(
-        userId: number,
-        sessionId: string,
+        user: User,
+        session: MySession,
         userAgent: string,
         ip: string,
     ): Promise<void> {
+        session.userId = user.id
+        session.userRoles = user.roles
         await this.sessionsService.storeSession(
-            userId,
-            sessionId,
+            user.id,
+            session.id,
             userAgent,
             ip,
         )
@@ -107,6 +110,7 @@ export class AuthService {
         const userSessions = await this.sessionsService.getSessionsByUserId(
             userId,
         )
+
         for (const { sessionId } of userSessions) {
             store.destroy(sessionId)
         }
@@ -130,5 +134,11 @@ export class AuthService {
                 resolve()
             })
         })
+    }
+
+    checkRoles(userRoles: RoleEnum[], requiredRoles: RoleEnum[]): boolean {
+        return requiredRoles.some(
+            (requiredRole) => userRoles.indexOf(requiredRole) > -1,
+        )
     }
 }

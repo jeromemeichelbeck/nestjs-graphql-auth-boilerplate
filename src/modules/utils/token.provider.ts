@@ -12,7 +12,8 @@ export class TokenProvider {
         const token = uuid()
         const key = `${prefix}:${token}`
 
-        console.log(key)
+        if (process.env.NODE_ENV === 'development')
+            console.log({ key, payload })
 
         let time = 1000 * 60 * 15
         switch (prefix) {

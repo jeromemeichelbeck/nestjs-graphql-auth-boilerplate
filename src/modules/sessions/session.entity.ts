@@ -8,7 +8,7 @@ export class Session {
 
     @Column()
     userId!: number
-    @ManyToOne(() => User, (user) => user.sessions)
+    @ManyToOne(() => User, (user) => user.sessions, { onDelete: 'CASCADE' })
     user!: User
 
     @Column()

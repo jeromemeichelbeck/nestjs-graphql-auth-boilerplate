@@ -10,7 +10,7 @@ export class BaseRepository<T> extends Repository<T> {
         await this.query(
             `TRUNCATE "${table}"${
                 options?.restartIdentity ? ' RESTART IDENTITY' : ''
-            };`,
+            } CASCADE;`,
         )
     }
 }

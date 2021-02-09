@@ -4,7 +4,7 @@ import { ErrorCodeEnum } from '../../../types/error-codes'
 export interface CaughtError {
     code: ErrorCodeEnum
     message: string
-    fields: string[]
+    fields?: string[]
 }
 
 export class CaughtGraphQLError extends GraphQLError {

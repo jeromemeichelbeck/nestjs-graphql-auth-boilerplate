@@ -1,7 +1,6 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common'
 import { GqlExecutionContext } from '@nestjs/graphql'
-import { Session } from 'inspector'
-import { MySession } from '../decorators/session.decorator'
+import { MySession } from '../decorators/sess.decorator'
 import { CaughtGraphQLError } from '../modules/common/classes/caught-grapghql-error.class'
 import { ErrorCodeEnum } from '../types/error-codes'
 

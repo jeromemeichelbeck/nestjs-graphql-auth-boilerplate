@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
+import { ErrorCodeEnum } from '../../types/error-codes'
 import { RoleEnum } from '../../types/roles'
 import { RegisterInfoInput } from '../auth/input-types/register-info.input'
 import { DropOptions } from '../common/base.repository'
+import { CaughtGraphQLError } from '../common/classes/caught-grapghql-error.class'
 import { ErrorHandlerProvider } from '../utils/error-handler.provider'
 import { UtilsService } from '../utils/utils.service'
 import { User } from './user.entity'
@@ -21,12 +23,20 @@ export class UsersService {
         return this.userRepository.findOne({ email })
     }
 
-    async findOneById(id: number): Promise<User | undefined> {
-        return this.userRepository.findOne(id)
+    async findOneById(id: number): Promise<User> {
+        const user = await this.userRepository.findOne(id)
+        if (!user)
+            throw new CaughtGraphQLError([
+                {
+                    code: ErrorCodeEnum.NOT_FOUND,
+                    message: `Cannot find user with id ${id}`,
+                },
+            ])
+
+        return user
     }
 
     async getUsers(): Promise<User[]> {
-        await this.utilsService.sleep(1000)
         return this.userRepository.find({})
     }
 

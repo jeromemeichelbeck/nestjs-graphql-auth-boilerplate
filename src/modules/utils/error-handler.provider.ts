@@ -8,7 +8,7 @@ import { StringFormatProvider } from './string-format.provider'
 export class ErrorHandlerProvider<T> {
     constructor(private readonly stringFormat: StringFormatProvider) {}
 
-    async dbErrorHandler(fn: () => Promise<T>): Promise<T> {
+    async dbErrorHandler<T>(fn: () => Promise<T>): Promise<T> {
         const defaultError = {
             code: ErrorCodeEnum.DB_ERROR,
             message: 'An unknown databade error has occured',
@@ -44,5 +44,20 @@ export class ErrorHandlerProvider<T> {
                     throw new CaughtGraphQLError([defaultError])
             }
         }
+    }
+
+    async notFoundErrorHandler<T>(fn: () => Promise<T>): Promise<T> {
+        const entity = await fn()
+
+        if (!entity) {
+            throw new CaughtGraphQLError([
+                {
+                    code: ErrorCodeEnum.NOT_FOUND,
+                    message: `Ressource not found`,
+                },
+            ])
+        }
+
+        return entity
     }
 }

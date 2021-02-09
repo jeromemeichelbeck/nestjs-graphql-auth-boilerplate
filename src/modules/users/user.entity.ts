@@ -36,8 +36,4 @@ export class User {
 
     @Column()
     username!: string
-
-    hasRole(roles: RoleEnum[]): boolean {
-        return this.roles.some((role) => roles.indexOf(role) > -1)
-    }
 }
