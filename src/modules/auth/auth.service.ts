@@ -102,6 +102,28 @@ export class AuthService {
         return user
     }
 
+    async forgotPassword(email: string): Promise<boolean> {
+        const user = await this.usersService.findOneByEmail(email)
+        if (user) {
+            const link = await this.tokenProvider.generateLink(
+                RedisPrefixEnum.CHANGE_PASSWORD,
+                user.id,
+            )
+
+            await this.mailerProvider.sendMail({
+                to: user.email,
+                subject: '[MetalEast] Changement de mot de passe',
+                template: 'forgot-password',
+                context: {
+                    username: user.username,
+                    link,
+                },
+            })
+        }
+
+        return true
+    }
+
     async storeSession(
         user: User,
         session: MySession,

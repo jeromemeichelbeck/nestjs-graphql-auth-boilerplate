@@ -67,4 +67,9 @@ export class AuthResolver {
 
         return user
     }
+
+    @Mutation(() => Boolean)
+    async forgotPassword(@Args('email') email: string): Promise<boolean> {
+        return this.authService.forgotPassword(email)
+    }
 }

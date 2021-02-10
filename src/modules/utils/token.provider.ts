@@ -20,14 +20,14 @@ export class TokenProvider {
             case RedisPrefixEnum.CONFIRM_EMAIL:
                 time = 1000 * 60 * 60 * 24 * 7
                 break
-            case RedisPrefixEnum.FORGOT_PASSWORD:
+            case RedisPrefixEnum.CHANGE_PASSWORD:
                 time = 1000 * 60 * 15
                 break
         }
 
         await client.set(key, JSON.stringify(payload), 'ex', time)
 
-        return `http://localhost:3000/${prefix}/${token}`
+        return `${process.env.CLIENT_URL}/${prefix}/${token}`
     }
 
     async validateToken(prefix: RedisPrefixEnum, token: string): Promise<any> {
