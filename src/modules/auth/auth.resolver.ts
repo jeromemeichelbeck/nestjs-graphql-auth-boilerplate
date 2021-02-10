@@ -54,19 +54,17 @@ export class AuthResolver {
         return true
     }
 
-    @Mutation(() => Boolean)
+    @Mutation(() => User)
     async confirmEmail(
         @Sess() session: MySession,
         @UserAgent() userAgent: string,
         @Ip() ip: string,
         @Args('token') token: string,
-    ): Promise<boolean> {
+    ): Promise<User> {
         const user = await this.authService.confirmEmail(token)
-
-        if (!user) return false
 
         await this.authService.storeSession(user, session, userAgent, ip)
 
-        return true
+        return user
     }
 }

@@ -81,17 +81,21 @@ export class AuthService {
         ])
     }
 
-    async confirmEmail(token: string): Promise<User | false> {
+    async confirmEmail(token: string): Promise<User> {
         const userId = await this.tokenProvider.validateToken(
             RedisPrefixEnum.CONFIRM_EMAIL,
             token,
         )
 
-        if (!userId || isNaN(+userId)) return false
+        if (!userId || isNaN(+userId))
+            throw new CaughtGraphQLError([
+                {
+                    code: ErrorCodeEnum.NOT_FOUND,
+                    message: `Cannot confirm the user`,
+                },
+            ])
 
         const user = await this.usersService.findOneById(userId)
-
-        if (!user) return false
 
         await this.usersService.activate(user)
 
