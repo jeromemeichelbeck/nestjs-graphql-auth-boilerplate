@@ -60,6 +60,12 @@ export class UsersService {
         await this.userRepository.save(user)
     }
 
+    async update(user: User): Promise<void> {
+        await this.errorHandler.dbErrorHandler(() =>
+            this.userRepository.save(user),
+        )
+    }
+
     // Dev
     async drop(options?: DropOptions) {
         await this.userRepository.drop(options)

@@ -7,6 +7,7 @@ import { UserAgent } from '../../decorators/user-agent.decorator'
 import { GraphQLValidationPipe } from '../../pipes/graphql-validation.pipe'
 import { User } from '../users/user.entity'
 import { AuthService } from './auth.service'
+import { ChangePasswordInfoInput } from './input-types/change-password-info.input'
 import { LoginInfoInput } from './input-types/login-info.input'
 import { RegisterInfoInput } from './input-types/register-info.input'
 @Resolver()
@@ -71,5 +72,22 @@ export class AuthResolver {
     @Mutation(() => Boolean)
     async forgotPassword(@Args('email') email: string): Promise<boolean> {
         return this.authService.forgotPassword(email)
+    }
+
+    @Mutation(() => Boolean)
+    async changePassword(
+        @Sess() session: MySession,
+        @UserAgent() userAgent: string,
+        @Ip() ip: string,
+        @Args('changePasswordInfo')
+        { hard, ...changePasswordInfo }: ChangePasswordInfoInput,
+    ): Promise<boolean> {
+        const user = await this.authService.changePassword(changePasswordInfo)
+
+        if (hard) await this.authService.wipeSession(user.id)
+
+        await this.authService.storeSession(user, session, userAgent, ip)
+
+        return true
     }
 }

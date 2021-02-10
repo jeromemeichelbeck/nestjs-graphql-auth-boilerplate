@@ -11,6 +11,7 @@ import { UsersService } from '../users/users.service'
 import { BcryptProvider } from '../utils/bcrypt.provider'
 import { MailerProvider } from '../utils/mailer.provider'
 import { TokenProvider } from '../utils/token.provider'
+import { ChangePasswordInfoInput } from './input-types/change-password-info.input'
 import { LoginInfoInput } from './input-types/login-info.input'
 import { RegisterInfoInput } from './input-types/register-info.input'
 
@@ -122,6 +123,31 @@ export class AuthService {
         }
 
         return true
+    }
+
+    async changePassword({
+        token,
+        password,
+    }: ChangePasswordInfoInput): Promise<User> {
+        const userId = await this.tokenProvider.validateToken(
+            RedisPrefixEnum.CHANGE_PASSWORD,
+            token,
+        )
+
+        if (!userId || isNaN(+userId))
+            throw new CaughtGraphQLError([
+                {
+                    code: ErrorCodeEnum.NOT_FOUND,
+                    message: `Cannot change password the user`,
+                },
+            ])
+        const user = await this.usersService.findOneById(userId)
+
+        user.password = await this.bycryptProvider.hash(password)
+
+        await this.usersService.update(user)
+
+        return user
     }
 
     async storeSession(
