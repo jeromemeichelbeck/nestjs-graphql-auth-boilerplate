@@ -79,7 +79,7 @@ export class AuthResolver {
         @Sess() session: MySession,
         @UserAgent() userAgent: string,
         @Ip() ip: string,
-        @Args('changePasswordInfo')
+        @Args('changePasswordInfo', GraphQLValidationPipe)
         { hard, ...changePasswordInfo }: ChangePasswordInfoInput,
     ): Promise<boolean> {
         const user = await this.authService.changePassword(changePasswordInfo)
