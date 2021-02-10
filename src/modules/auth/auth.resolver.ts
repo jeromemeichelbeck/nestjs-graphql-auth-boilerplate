@@ -74,20 +74,20 @@ export class AuthResolver {
         return this.authService.forgotPassword(email)
     }
 
-    @Mutation(() => Boolean)
+    @Mutation(() => User)
     async changePassword(
         @Sess() session: MySession,
         @UserAgent() userAgent: string,
         @Ip() ip: string,
         @Args('changePasswordInfo', GraphQLValidationPipe)
         { hard, ...changePasswordInfo }: ChangePasswordInfoInput,
-    ): Promise<boolean> {
+    ): Promise<User> {
         const user = await this.authService.changePassword(changePasswordInfo)
 
         if (hard) await this.authService.wipeSession(user.id)
 
         await this.authService.storeSession(user, session, userAgent, ip)
 
-        return true
+        return user
     }
 }
