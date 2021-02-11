@@ -5,19 +5,24 @@ import { RegisterInfoInput } from '../auth/input-types/register-info.input'
 export class UserSeed {
     data: RegisterInfoInput[] = [
         {
+            email: 'activeadmin@example.com',
+            password: 'azerty',
+            username: 'Active Admin',
+        },
+        {
             email: 'admin@example.com',
             password: 'azerty',
-            username: 'Admin',
+            username: 'Not Active Admin',
         },
         {
-            email: 'admin2@example.com',
+            email: 'activeuser@example.com',
             password: 'azerty',
-            username: 'Admin Too',
+            username: 'Active User',
         },
         {
-            email: 'notanadmin@example.com',
+            email: 'user@example.com',
             password: 'azerty',
-            username: 'Not An Admin',
+            username: 'Not Active User',
         },
     ]
 }

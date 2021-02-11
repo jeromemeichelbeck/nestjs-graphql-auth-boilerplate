@@ -3,6 +3,7 @@ import { Query, ResolveField, Resolver, Root } from '@nestjs/graphql'
 import { Roles } from '../../decorators/roles.decorator'
 import { MySession, Sess } from '../../decorators/sess.decorator'
 import { AuthGuard } from '../../guards/auth.guard'
+import { RolesGuard } from '../../guards/role.guards'
 import { RoleEnum } from '../../types/roles'
 import { User } from './user.entity'
 import { UsersService } from './users.service'
@@ -27,7 +28,7 @@ export class UsersResolver {
 
     @Query(() => [User])
     @Roles(RoleEnum.ADMIN)
-    @UseGuards(AuthGuard)
+    @UseGuards(AuthGuard, RolesGuard)
     async users(): Promise<User[]> {
         return this.usersService.getUsers()
     }

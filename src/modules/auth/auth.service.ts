@@ -32,11 +32,6 @@ export class AuthService {
 
         const user = await this.usersService.register(registerInfo)
 
-        const link = await this.tokenProvider.generateLink(
-            MailTypeEnum.CONFIRM_EMAIL,
-            user.id,
-        )
-
         await this.sendLink(MailTypeEnum.CONFIRM_EMAIL, user)
 
         return user
@@ -192,6 +187,7 @@ export class AuthService {
     }
 
     async sendLink(type: MailTypeEnum, user: User) {
+        if (user.email.includes('@example.com')) return
         const link = await this.tokenProvider.generateLink(
             MailTypeEnum.CONFIRM_EMAIL,
             user.id,

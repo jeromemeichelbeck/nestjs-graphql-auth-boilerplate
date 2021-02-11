@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
+import { RoleEnum } from '../../types/roles'
 import { AuthService } from '../auth/auth.service'
-import { UsersRepository } from '../users/users.repository'
 import { UsersService } from '../users/users.service'
 import { UserSeed } from './user-seed'
 
@@ -16,7 +16,18 @@ export class SeedService {
         if (drop) await this.userService.drop({ restartIdentity: true })
 
         for (const user of this.userSeed.data) {
-            await this.authService.register(user)
+            const registeredUser = await this.authService.register(user)
+
+            if (registeredUser.email.includes('active')) {
+                await this.userService.activate(registeredUser)
+            }
+
+            if (registeredUser.email.includes('admin')) {
+                await this.userService.addRoles({
+                    userId: registeredUser.id,
+                    roles: [RoleEnum.ADMIN],
+                })
+            }
         }
 
         return true
