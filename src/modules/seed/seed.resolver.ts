@@ -1,10 +1,10 @@
 import { UseGuards } from '@nestjs/common'
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
-import { IsDevGuard } from '../../guards/is-dev.guard'
+import { Args, Mutation, Resolver } from '@nestjs/graphql'
+import { DevGuard } from '../../guards/dev.guard'
 import { SeedService } from './seed.service'
 
 @Resolver()
-@UseGuards(IsDevGuard)
+@UseGuards(DevGuard)
 export class SeedResolver {
     constructor(private readonly seedService: SeedService) {}
 

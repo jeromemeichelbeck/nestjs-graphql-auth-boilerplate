@@ -3,7 +3,7 @@ import { ConfigModule } from '@nestjs/config'
 import { RedisModule } from 'nestjs-redis'
 import { BcryptProvider } from './bcrypt.provider'
 import { ErrorHandlerProvider } from './error-handler.provider'
-import { MailerProvider } from './mailer.provider'
+import { MailProvider } from './mail.provider'
 import { StringFormatProvider } from './string-format.provider'
 import { TokenProvider } from './token.provider'
 import { UtilsService } from './utils.service'
@@ -14,7 +14,7 @@ import { UtilsService } from './utils.service'
     providers: [
         UtilsService,
         ErrorHandlerProvider,
-        MailerProvider,
+        MailProvider,
         BcryptProvider,
         StringFormatProvider,
         TokenProvider,
@@ -22,7 +22,7 @@ import { UtilsService } from './utils.service'
     exports: [
         UtilsService,
         ErrorHandlerProvider,
-        MailerProvider,
+        MailProvider,
         BcryptProvider,
         StringFormatProvider,
         TokenProvider,

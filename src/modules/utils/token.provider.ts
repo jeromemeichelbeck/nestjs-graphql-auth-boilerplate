@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common'
 import { RedisService } from 'nestjs-redis'
 import { v4 as uuid } from 'uuid'
-import { RedisPrefixEnum } from '../../types/redis'
+import { MailTypeEnum } from '../../types/mails'
 
 @Injectable()
 export class TokenProvider {
     constructor(private readonly redisService: RedisService) {}
 
-    async generateLink(prefix: RedisPrefixEnum, payload: any): Promise<string> {
+    async generateLink(prefix: MailTypeEnum, payload: any): Promise<string> {
         const client = this.redisService.getClient()
         const token = uuid()
         const key = `${prefix}:${token}`
@@ -17,10 +17,10 @@ export class TokenProvider {
 
         let time = 1000 * 60 * 15
         switch (prefix) {
-            case RedisPrefixEnum.CONFIRM_EMAIL:
+            case MailTypeEnum.CONFIRM_EMAIL:
                 time = 1000 * 60 * 60 * 24 * 7
                 break
-            case RedisPrefixEnum.CHANGE_PASSWORD:
+            case MailTypeEnum.CHANGE_PASSWORD:
                 time = 1000 * 60 * 15
                 break
         }
@@ -30,7 +30,7 @@ export class TokenProvider {
         return `${process.env.CLIENT_URL}/${prefix}/${token}`
     }
 
-    async validateToken(prefix: RedisPrefixEnum, token: string): Promise<any> {
+    async validateToken(prefix: MailTypeEnum, token: string): Promise<any> {
         const client = this.redisService.getClient()
         const key = `${prefix}:${token}`
 

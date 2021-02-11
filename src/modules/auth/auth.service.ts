@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { MySession } from '../../decorators/sess.decorator'
 import { ErrorCodeEnum } from '../../types/error-codes'
-import { RedisPrefixEnum } from '../../types/redis'
+import { MailTypeEnum } from '../../types/mails'
 import { RoleEnum } from '../../types/roles'
 import { CaughtGraphQLError } from '../common/classes/caught-grapghql-error.class'
 import { SessionsService } from '../sessions/sessions.service'
@@ -9,7 +9,7 @@ import { StoreService } from '../store/store.service'
 import { User } from '../users/user.entity'
 import { UsersService } from '../users/users.service'
 import { BcryptProvider } from '../utils/bcrypt.provider'
-import { MailerProvider } from '../utils/mailer.provider'
+import { MailProvider } from '../utils/mail.provider'
 import { TokenProvider } from '../utils/token.provider'
 import { ChangePasswordInfoInput } from './input-types/change-password-info.input'
 import { LoginInfoInput } from './input-types/login-info.input'
@@ -21,7 +21,7 @@ export class AuthService {
         private readonly usersService: UsersService,
         private readonly bycryptProvider: BcryptProvider,
         private readonly tokenProvider: TokenProvider,
-        private readonly mailerProvider: MailerProvider,
+        private readonly mailProvider: MailProvider,
         private readonly storeService: StoreService,
         private readonly sessionsService: SessionsService,
     ) {}
@@ -33,19 +33,11 @@ export class AuthService {
         const user = await this.usersService.register(registerInfo)
 
         const link = await this.tokenProvider.generateLink(
-            RedisPrefixEnum.CONFIRM_EMAIL,
+            MailTypeEnum.CONFIRM_EMAIL,
             user.id,
         )
 
-        await this.mailerProvider.sendMail({
-            to: user.email,
-            subject: '[MetalEast] Bienvenue !',
-            template: 'welcome',
-            context: {
-                username: user.username,
-                link,
-            },
-        })
+        await this.sendLink(MailTypeEnum.CONFIRM_EMAIL, user)
 
         return user
     }
@@ -84,7 +76,7 @@ export class AuthService {
 
     async confirmEmail(token: string): Promise<User> {
         const userId = await this.tokenProvider.validateToken(
-            RedisPrefixEnum.CONFIRM_EMAIL,
+            MailTypeEnum.CONFIRM_EMAIL,
             token,
         )
 
@@ -107,19 +99,11 @@ export class AuthService {
         const user = await this.usersService.findOneByEmail(email)
         if (user) {
             const link = await this.tokenProvider.generateLink(
-                RedisPrefixEnum.CHANGE_PASSWORD,
+                MailTypeEnum.CHANGE_PASSWORD,
                 user.id,
             )
 
-            await this.mailerProvider.sendMail({
-                to: user.email,
-                subject: '[MetalEast] Changement de mot de passe',
-                template: 'forgot-password',
-                context: {
-                    username: user.username,
-                    link,
-                },
-            })
+            await this.sendLink(MailTypeEnum.CHANGE_PASSWORD, user)
         }
 
         return true
@@ -128,9 +112,10 @@ export class AuthService {
     async changePassword({
         token,
         password,
+        hard,
     }: ChangePasswordInfoInput): Promise<User> {
         const userId = await this.tokenProvider.validateToken(
-            RedisPrefixEnum.CHANGE_PASSWORD,
+            MailTypeEnum.CHANGE_PASSWORD,
             token,
         )
 
@@ -141,11 +126,13 @@ export class AuthService {
                     message: `Cannot change password the user`,
                 },
             ])
-        const user = await this.usersService.findOneById(userId)
 
+        const user = await this.usersService.findOneById(userId)
         user.password = await this.bycryptProvider.hash(password)
 
         await this.usersService.update(user)
+
+        if (hard) await this.wipeSession(user.id)
 
         return user
     }
@@ -199,8 +186,35 @@ export class AuthService {
     }
 
     checkRoles(userRoles: RoleEnum[], requiredRoles: RoleEnum[]): boolean {
-        return requiredRoles.some(
-            (requiredRole) => userRoles.indexOf(requiredRole) > -1,
+        return requiredRoles.some((requiredRole) =>
+            userRoles.includes(requiredRole),
         )
+    }
+
+    async sendLink(type: MailTypeEnum, user: User) {
+        const link = await this.tokenProvider.generateLink(
+            MailTypeEnum.CONFIRM_EMAIL,
+            user.id,
+        )
+
+        let subject
+        switch (type) {
+            case MailTypeEnum.CONFIRM_EMAIL:
+                subject = `Welcome`
+                break
+            case MailTypeEnum.CHANGE_PASSWORD:
+                subject = `Changing your password`
+                break
+        }
+
+        await this.mailProvider.sendMail({
+            to: user.email,
+            subject,
+            template: type,
+            context: {
+                user,
+                link,
+            },
+        })
     }
 }

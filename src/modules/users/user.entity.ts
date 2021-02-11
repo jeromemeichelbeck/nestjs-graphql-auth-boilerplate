@@ -28,6 +28,7 @@ export class User {
     roles!: RoleEnum[]
 
     @Column({ unique: true })
+    @HideField()
     email!: string
 
     @Column()

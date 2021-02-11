@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { MailerService, ISendMailOptions } from '@nestjs-modules/mailer'
 
 @Injectable()
-export class MailerProvider {
+export class MailProvider {
     constructor(private readonly mailerService: MailerService) {}
 
     async sendMail(sendMailOptions: ISendMailOptions) {

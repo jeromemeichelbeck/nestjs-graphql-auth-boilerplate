@@ -4,7 +4,7 @@ import { CaughtGraphQLError } from '../modules/common/classes/caught-grapghql-er
 import { ErrorCodeEnum } from '../types/error-codes'
 
 @Injectable()
-export class IsDevGuard implements CanActivate {
+export class DevGuard implements CanActivate {
     canActivate(context: ExecutionContext): boolean {
         const ctx = GqlExecutionContext.create(context)
         if (ctx.getContext().req.cookies.isDev === process.env.DEV_COOKIE)

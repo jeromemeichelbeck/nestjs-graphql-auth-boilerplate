@@ -13,7 +13,7 @@ export const mailerConfig = (): { [ConfigEnum.mailer]: MailerOptions } => ({
             },
         },
         defaults: {
-            from: '"Metal East" <noreply@metaleast.com>',
+            from: `'"${process.env.APP_NAME}" <${process.env.APP_REPLY_EMAIL}>`,
         },
         template: {
             dir: join(__dirname, '../../templates'),

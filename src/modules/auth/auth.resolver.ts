@@ -10,6 +10,7 @@ import { AuthService } from './auth.service'
 import { ChangePasswordInfoInput } from './input-types/change-password-info.input'
 import { LoginInfoInput } from './input-types/login-info.input'
 import { RegisterInfoInput } from './input-types/register-info.input'
+
 @Resolver()
 export class AuthResolver {
     constructor(private readonly authService: AuthService) {}
@@ -31,7 +32,6 @@ export class AuthResolver {
     ): Promise<User> {
         const user = await this.authService.validateLogin(loginInfo)
 
-        session.userId = user.id
         await this.authService.storeSession(user, session, userAgent, ip)
 
         return user
@@ -80,11 +80,9 @@ export class AuthResolver {
         @UserAgent() userAgent: string,
         @Ip() ip: string,
         @Args('changePasswordInfo', GraphQLValidationPipe)
-        { hard, ...changePasswordInfo }: ChangePasswordInfoInput,
+        changePasswordInfo: ChangePasswordInfoInput,
     ): Promise<User> {
         const user = await this.authService.changePassword(changePasswordInfo)
-
-        if (hard) await this.authService.wipeSession(user.id)
 
         await this.authService.storeSession(user, session, userAgent, ip)
 
