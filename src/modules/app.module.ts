@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common'
+import { AdminModule } from './admin/admin.module'
 import { AuthModule } from './auth/auth.module'
 import { ConfigModule } from './config.boot'
 import { GraphQlModule } from './graphql.boot'
@@ -21,6 +22,7 @@ import { UserModule } from './users/users.module'
         GraphQlModule,
         AuthModule,
         UserModule,
+        AdminModule,
         SeedModule,
     ],
 })

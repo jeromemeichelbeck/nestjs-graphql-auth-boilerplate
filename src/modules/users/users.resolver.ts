@@ -1,9 +1,8 @@
 import { UseGuards } from '@nestjs/common'
-import { Query, ResolveProperty, Resolver, Root } from '@nestjs/graphql'
+import { Query, ResolveField, Resolver, Root } from '@nestjs/graphql'
 import { Roles } from '../../decorators/roles.decorator'
 import { MySession, Sess } from '../../decorators/sess.decorator'
 import { AuthGuard } from '../../guards/auth.guard'
-import { RolesGuard } from '../../guards/role.guards'
 import { RoleEnum } from '../../types/roles'
 import { User } from './user.entity'
 import { UsersService } from './users.service'
@@ -12,7 +11,7 @@ import { UsersService } from './users.service'
 export class UsersResolver {
     constructor(private readonly usersService: UsersService) {}
 
-    @ResolveProperty(() => String, { nullable: true })
+    @ResolveField(() => String, { nullable: true })
     email(@Sess() session: MySession, @Root() user: User): string | null {
         return session.userRoles.includes(RoleEnum.ADMIN) ||
             session.userId === user.id

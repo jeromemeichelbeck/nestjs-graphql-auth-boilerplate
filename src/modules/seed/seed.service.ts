@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { AuthService } from '../auth/auth.service'
 import { UsersRepository } from '../users/users.repository'
 import { UsersService } from '../users/users.service'
-import { UserSeed } from './user-seed.data'
+import { UserSeed } from './user-seed'
 
 @Injectable()
 export class SeedService {

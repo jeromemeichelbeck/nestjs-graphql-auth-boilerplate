@@ -4,7 +4,7 @@ import { AuthModule } from '../auth/auth.module'
 import { UserModule } from '../users/users.module'
 import { SeedResolver } from './seed.resolver'
 import { SeedService } from './seed.service'
-import { UserSeed } from './user-seed.data'
+import { UserSeed } from './user-seed'
 
 export interface SeedModuleOptions {
     production: boolean

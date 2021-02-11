@@ -2,9 +2,11 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { ErrorCodeEnum } from '../../types/error-codes'
 import { RoleEnum } from '../../types/roles'
+import { AlterRolesInfoInput } from '../admin/input-types/add-roles-info.input'
 import { RegisterInfoInput } from '../auth/input-types/register-info.input'
 import { DropOptions } from '../common/base.repository'
 import { CaughtGraphQLError } from '../common/classes/caught-grapghql-error.class'
+import { ArrayProvider } from '../utils/array.provider'
 import { ErrorHandlerProvider } from '../utils/error-handler.provider'
 import { User } from './user.entity'
 import { UsersRepository } from './users.repository'
@@ -15,6 +17,7 @@ export class UsersService {
         @InjectRepository(UsersRepository)
         private readonly userRepository: UsersRepository,
         private readonly errorHandler: ErrorHandlerProvider<User>,
+        private readonly arrayProvider: ArrayProvider,
     ) {}
 
     async findOneByEmail(email: string): Promise<User | undefined> {
@@ -58,6 +61,26 @@ export class UsersService {
     async activate(user: User): Promise<void> {
         user.active = true
         await this.userRepository.save(user)
+    }
+
+    async addRoles({ userId, roles }: AlterRolesInfoInput): Promise<void> {
+        const user = await this.findOneById(userId)
+
+        user.roles = this.arrayProvider.union(user.roles, roles)
+
+        await this.errorHandler.dbErrorHandler(() =>
+            this.userRepository.save(user),
+        )
+    }
+
+    async removeRoles({ userId, roles }: AlterRolesInfoInput): Promise<void> {
+        const user = await this.findOneById(userId)
+
+        user.roles = user.roles.filter((role) => !roles.includes(role))
+
+        await this.errorHandler.dbErrorHandler(() =>
+            this.userRepository.save(user),
+        )
     }
 
     async update(user: User): Promise<void> {

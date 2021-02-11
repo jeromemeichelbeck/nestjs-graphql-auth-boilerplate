@@ -17,7 +17,7 @@ export class UserSeed {
         {
             email: 'notanadmin@example.com',
             password: 'azerty',
-            username: 'Not An Admlin',
+            username: 'Not An Admin',
         },
     ]
 }

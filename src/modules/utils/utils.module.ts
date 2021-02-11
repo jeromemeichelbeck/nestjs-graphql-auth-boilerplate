@@ -1,6 +1,7 @@
 import { Global, Module } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
 import { RedisModule } from 'nestjs-redis'
+import { ArrayProvider } from './array.provider'
 import { BcryptProvider } from './bcrypt.provider'
 import { ErrorHandlerProvider } from './error-handler.provider'
 import { MailProvider } from './mail.provider'
@@ -18,6 +19,7 @@ import { UtilsService } from './utils.service'
         BcryptProvider,
         StringFormatProvider,
         TokenProvider,
+        ArrayProvider,
     ],
     exports: [
         UtilsService,
@@ -26,6 +28,7 @@ import { UtilsService } from './utils.service'
         BcryptProvider,
         StringFormatProvider,
         TokenProvider,
+        ArrayProvider,
     ],
 })
 export class UtilsModule {}
